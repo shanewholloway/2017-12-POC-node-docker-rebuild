@@ -1,0 +1,24 @@
+{
+  "private": true,
+  "devDependencies": {
+    "babel-preset-jsy": "^0.9.4",
+    "babel-cli": "^6.26.0",
+    "nodemon": "*"
+  },
+  "babel": {
+    "presets": [
+      "jsy/lean"
+    ]
+  },
+  "scripts": {
+    "start": "node dist",
+    "start:dev": "nodemon -d 2 dist",
+    "build": "babel -s inline -x .js,.jsy code -d dist",
+    "watch": "npm -s run build -- --watch",
+    "pretest": "npm -s run build",
+    "testone": "babel-node test/example.jsy"
+  },
+  "dependencies": {
+    "express": "^4.16.2"
+  }
+}
