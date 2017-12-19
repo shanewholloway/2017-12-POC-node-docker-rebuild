@@ -1,13 +1,10 @@
-FROM 127.0.0.1:5003/test/devel as watcher
-COPY deps/*/*.tgz  /usr/src/app/dist
-RUN cd dist \
- && echo '{"private": true}' > package.json \
- && npm install *.tgz
-
-COPY ./dist /usr/src/app/dist
+FROM 127.0.0.1:5003/test/pre-live as watcher
+COPY ./deps/ /usr/src/app/deps/
+COPY ./dist/ /usr/src/app/dist/
 
 
-FROM 127.0.0.1:5003/test
+FROM 127.0.0.1:5003/test as live
+COPY --from=watcher /usr/src/app/deps/ /usr/src/app/deps/
 COPY --from=watcher /usr/src/app/dist/ /usr/src/app/dist/
 
 # vim: ft=dockerfile

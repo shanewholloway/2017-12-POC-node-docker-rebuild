@@ -6,11 +6,16 @@
     "stop": "docker service rm test-live",
     "logs": "docker service logs -f test-live",
 
-    "build": "docker build --target final -t 127.0.0.1:5003/test . && docker push 127.0.0.1:5003/test",
-    "postbuild": "docker build --target devel -t 127.0.0.1:5003/test/devel . && docker push 127.0.0.1:5003/test/devel",
+    "build": "docker build -t 127.0.0.1:5003/test . && docker push 127.0.0.1:5003/test",
+    "devel": "npm -s run devel:base && npm -s run devel:prelive",
+    "devel:base": "docker build --target devel -t 127.0.0.1:5003/test/devel . && docker push 127.0.0.1:5003/test/devel",
+    "devel:prelive": "docker build -f ./approot/Dockerfile.deps -t 127.0.0.1:5003/test/pre-live ./approot",
 
     "dkr-registry-init": "docker service create --name POC_local_swarm_registry --publish 5003:5000 --detach=false registry:latest || true",
     "dkr-registry-rm": "docker service rm POC_local_swarm_registry || true",
+
+    "dkr-ls": "docker ps -q --filter 'label=com.docker.swarm.service.name=test-live'",
+    "dkr-exec": "docker exec -it $(docker ps -q --filter 'label=com.docker.swarm.service.name=test-live') bash",
 
     "env": "env"
   }

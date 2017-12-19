@@ -1,0 +1,8 @@
+FROM 127.0.0.1:5003/test/devel
+COPY ./deps/ /usr/src/app/deps/
+RUN cp ./deps/package.json ./dist/ \
+ && cd ./dist \
+ && npm install . \
+ && npm dedupe
+
+# vim: ft=dockerfile

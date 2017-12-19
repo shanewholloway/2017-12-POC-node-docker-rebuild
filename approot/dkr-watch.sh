@@ -3,7 +3,7 @@ export DKR_DST=127.0.0.1:5003/test/live
 
 echo ; echo
 echo '## Rebuild live docker image'; echo
-docker build -f ./Dockerfile.watch -t $DKR_DST .
+docker build --target live -f ./Dockerfile.watch -t $DKR_DST .
 
 echo ; echo
 echo '## Pushing live docker image'; echo

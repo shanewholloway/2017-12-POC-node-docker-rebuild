@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "dependencies": {
+    "msg-fabric-core": "file:../deps/msg-fabric-core",
+    "msg-fabric-endpoint": "file:../deps/msg-fabric-endpoint",
+    "msg-fabric-packet-stream": "file:../deps/msg-fabric-packet-stream",
+    "msg-fabric-plugin-swim-discovery": "file:../deps/msg-fabric-plugin-swim-discovery"
+  }
+}

@@ -1,14 +1,21 @@
+const V = 'V 2142'
+console.log @ V
 
+for const m of @[]
+  'msg-fabric-endpoint'
+  'msg-fabric-core'
+  'msg-fabric-packet-stream'
+  'msg-fabric-plugin-swim-discovery'
+    ::
 
-try ::
-  console.log @ 'Can have scrypt:', !! require('scrypt') 
-catch err :: console.error @ 'error during require:', err
+  try ::
+    console.log @ `Can use local dependecy ${m}: ${!! require(m)}`
+  catch err :: console.error @ 'error during require:', err.message
 
 setInterval @
-  () => ::
-    console.log @ 'DYN', new Date()
-  1000
+  () => :: console.log @ `DYN ${V}`, new Date()
+  30000
 
 process.on @ 'SIGTERM', () => ::
-  console.log @ 'JUST SIGTERM'
+  console.log @ '\n\nGOT SIGTERM; exiting(0)\n\n'
   process.exit(0)
