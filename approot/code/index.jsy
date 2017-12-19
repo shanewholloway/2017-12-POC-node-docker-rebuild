@@ -1,1 +1,14 @@
-console.log @ 'Hello EVERYONE', new Date()
+
+
+try ::
+  console.log @ 'Can have scrypt:', !! require('scrypt') 
+catch err :: console.error @ 'error during require:', err
+
+setInterval @
+  () => ::
+    console.log @ 'DYN', new Date()
+  1000
+
+process.on @ 'SIGTERM', () => ::
+  console.log @ 'JUST SIGTERM'
+  process.exit(0)

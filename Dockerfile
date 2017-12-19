@@ -16,6 +16,9 @@ COPY approot/ /usr/src/app/
 RUN npm -s run build
 
 
+FROM build_deps_dev as devel
+
+
 FROM debian:jessie as final
 WORKDIR /usr/src/app
 CMD [ "/usr/local/bin/node", "./dist" ]
