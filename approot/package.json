@@ -19,7 +19,6 @@
     "start": "node dist",
     "build": "babel -s inline -x .js,.jsy code -d dist",
     "watch": "npm -s run build -- --watch",
-    "dkr-watch": "nodemon -d 1 -w ./dist/ -w ./deps/*/dist --exec 'bash dkr-watch.sh'",
     "pretest": "npm -s run build",
     "test": true
   }

@@ -1,9 +1,10 @@
-const V = 'V 2142'
+const V = 'Version 2142.0'
 console.log @ V
 
 for const m of @[]
   'msg-fabric-endpoint'
   'msg-fabric-core'
+  'express'
   'msg-fabric-packet-stream'
   'msg-fabric-plugin-swim-discovery'
     ::

@@ -1,5 +1,6 @@
-FROM 127.0.0.1:5003/test/devel
-COPY ./deps/ /usr/src/app/deps/
+ARG DKRENV_IMG
+FROM ${DKRENV_IMG}:build
+COPY ./approot/deps/ /usr/src/app/deps/
 RUN cp ./deps/package.json ./dist/ \
  && cd ./dist \
  && npm install . \
