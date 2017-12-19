@@ -4,8 +4,14 @@
     "svc": "test-live",
     "img": "127.0.0.1:5003/poc/test-live"
   },
+  "dkrenv:alpine": {
+    "svc": "test-alpine-live",
+    "img": "127.0.0.1:5003/poc/test-alpine-live",
+    "dockerfile": "./Dockerfile.alpine"
+  },
   "scripts": {
     ":dkrenv": "bash ./dkrenv.sh",
+    "start": "bash ./dkrenv.sh start",
     "stop": "bash ./dkrenv.sh stop",
     "logs": "bash ./dkrenv.sh logs",
     "exec": "bash ./dkrenv.sh exec",

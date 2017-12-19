@@ -32,13 +32,13 @@ function cmd_logs {
 
 
 function cmd_build {
-  docker build -t $DKRENV_IMG:latest .
+  docker build -f $DKRENV_DKRFILE -t $DKRENV_IMG:latest .
   docker push $DKRENV_IMG:latest
 }
 
 function cmd_build_devel {
   # Use the primary Dockerfile build target to create $DKRENV_IMG:build
-  docker build --target build -t $DKRENV_IMG:build .
+  docker build --target build -f $DKRENV_DKRFILE -t $DKRENV_IMG:build .
 
   # Add any localized devel overrides to the build image, creating $DKRENV_IMG:devel
   docker build -f ./Dockerfile.devel --build-arg DKRENV_IMG=$DKRENV_IMG -t $DKRENV_IMG:devel .
@@ -69,7 +69,9 @@ function cmd_live {
 
 if [[ -n "$npm_package_dkrenv_svc" ]] ; then export DKRENV_SVC=$npm_package_dkrenv_svc ; fi
 if [[ -n "$npm_package_dkrenv_img" ]] ; then export DKRENV_IMG=$npm_package_dkrenv_img ; fi
+if [[ -n "$npm_package_dkrenv_dockerfile" ]] ; then export DKRENV_DKRFILE=$npm_package_dkrenv_dockerfile ; fi
 if [[ -z "$DKRENV_SVC" || -z "$DKRENV_IMG" ]] ; then exec npm -s run :dkrenv -- $1; fi
+if [[ -z "$DKRENV_DKRFILE" ]] ; then export DKRENV_DKRFILE=./Dockerfile ; fi
 
 case "$1" in
   start) cmd_start ;;
