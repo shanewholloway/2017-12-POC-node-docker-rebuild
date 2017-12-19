@@ -32,6 +32,10 @@ function cmd_logs {
 
 
 function cmd_build {
+  cd ./approot
+  npm install
+  npm run build
+  cd ../
   docker build -f $DKRENV_DKRFILE -t $DKRENV_IMG:latest .
   docker push $DKRENV_IMG:latest
 }
