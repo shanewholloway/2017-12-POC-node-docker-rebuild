@@ -18,7 +18,7 @@ const devenv_map = {
 }
 
 function svc_args(service, join_str=' \\\n  ') {
-  const svc_args = [].concat(service.svc_args||[])
+  const svc_args = [].concat(service._args_ || [])
   for ( const [k,arg] of Object.entries(devenv_map) ) {
     let lst = service[k]
     if (null == lst) continue
@@ -32,8 +32,6 @@ function svc_args(service, join_str=' \\\n  ') {
       if (false === v) continue
       else if (true === v)
         svc_args.push(`--${arg}`)
-      else if ('string' === typeof v)
-        svc_args.push(`--${arg} "${v}"`)
       else
         svc_args.push(`--${arg} ${v}`)
   }
