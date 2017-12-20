@@ -2,7 +2,11 @@
   "private": true,
   "dkrenv": {
     "svc": "test-live",
-    "img": "127.0.0.1:5003/poc/test-live"
+    "img": "127.0.0.1:5003/poc/test-live",
+    "service": {
+      "replicas": 4,
+      "update-parallelism": 2
+    }
   },
   "dkrenv:alpine": {
     "svc": "test-alpine-live",

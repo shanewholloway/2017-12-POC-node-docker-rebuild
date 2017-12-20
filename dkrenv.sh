@@ -2,7 +2,8 @@
 
 function cmd_create {
   cmd_build
-  docker service create --detach=false --name=$DKRENV_SVC $DKRENV_IMG
+  SVC_ARGS=$(node ./tools/svc_args.js)
+  docker service create --detach=false $SVC_ARGS --name=$DKRENV_SVC $DKRENV_IMG
 }
 function cmd_update {
   cmd_build

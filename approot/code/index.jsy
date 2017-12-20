@@ -1,6 +1,7 @@
 const os = require('os')
-const V = 'Version 2142'
-console.log @ V
+const V = 'Version 2242'
+console.log @
+  `${V}\n    `
   os.platform()
   os.release()
   os.arch()
@@ -16,11 +17,11 @@ for const m of @[]
 
   try ::
     console.log @ `Can use local dependecy ${m}: ${!! require(m)}`
-  catch err :: console.error @ 'error during require:', err.message
+  catch err :: console.log @ 'error during require:', err.message
 
 setInterval @
   () => :: console.log @ `DYN ${V}`, new Date()
-  30000
+  2000
 
 process.on @ 'SIGTERM', () => ::
   console.log @ '\n\nGOT SIGTERM; exiting(0)\n\n'
