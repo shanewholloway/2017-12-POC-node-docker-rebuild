@@ -17,7 +17,7 @@ const devenv_map = {
   'update-delay': 'update-delay', 'update-monitor': 'update-monitor', 'update-order': 'update-order', 'update-parallelism': 'update-parallelism', 'update-failure-action': 'update-failure-action', 'update-max-failure-ratio': 'update-max-failure-ratio',
 }
 
-function svc_args(service, join_str=' \\\n  ') {
+function svc_args(service, join_str='\n') {
   const svc_args = [].concat(service._args_ || [])
   for ( const [k,arg] of Object.entries(devenv_map) ) {
     let lst = service[k]
@@ -37,7 +37,7 @@ function svc_args(service, join_str=' \\\n  ') {
   }
 
   return null != join_str
-    ? svc_args.join(' \\\n  ')
+    ? svc_args.join(join_str)
     : svc_args
 }
 

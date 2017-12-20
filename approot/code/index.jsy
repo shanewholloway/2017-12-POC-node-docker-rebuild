@@ -1,5 +1,5 @@
 const os = require('os')
-const V = 'Version 2242'
+const V = 'Version 2342'
 console.log @
   `${V}\n    `
   os.platform()
@@ -7,22 +7,23 @@ console.log @
   os.arch()
   @{} shell: os.userInfo().shell
 
-for const m of @[]
-  'msg-fabric-endpoint'
-  'msg-fabric-core'
-  'express'
-  'msg-fabric-packet-stream'
-  'msg-fabric-plugin-swim-discovery'
-    ::
+if 0 ::
+  for const m of @[]
+    'msg-fabric-endpoint'
+    'msg-fabric-core'
+    'express'
+    'msg-fabric-packet-stream'
+    'msg-fabric-plugin-swim-discovery'
+      ::
 
-  try ::
-    console.log @ `Can use local dependecy ${m}: ${!! require(m)}`
-  catch err :: console.log @ 'error during require:', err.message
+    try ::
+      console.log @ `Can use local dependecy ${m}: ${!! require(m)}`
+    catch err :: console.log @ 'error during require:', err.message
 
 setInterval @
   () => :: console.log @ `DYN ${V}`, new Date()
   2000
 
 process.on @ 'SIGTERM', () => ::
-  console.log @ '\n\nGOT SIGTERM; exiting(0)\n\n'
+  console.log @ `GOT SIGTERM ${V}`
   process.exit(0)

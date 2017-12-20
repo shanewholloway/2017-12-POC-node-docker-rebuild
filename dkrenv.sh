@@ -55,7 +55,7 @@ function cmd_watch {
   cmd_build_devel
 
   # Watch for dist changes; upon change run the live entrypoint of this script
-  nodemon -Id 1 \
+  nodemon --signal SIGTERM --no-stdin --delay 1 \
     -w ./approot/dist \
     -w ./approot/deps/*/dist \
     --exec "bash $0 live"
