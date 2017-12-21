@@ -10,8 +10,8 @@ function cmd_update {
   docker service update --detach=false --image $DKRENV_IMG:latest $DKRENV_SVC
 }
 function cmd_start {
-  DKR_IDS=$(docker ps -q --filter "label=com.docker.swarm.service.name=$DKRENV_SVC")
-  if [[ -z "$DKR_IDS" ]] ; then
+  SVC_IDS=$(docker service ls -q --filter "name=$DKRENV_SVC")
+  if [[ -z "$SVC_IDS" ]] ; then
     cmd_create ;
   else
     cmd_update ;
@@ -23,7 +23,7 @@ function cmd_stop {
 
 
 function cmd_exec {
-  DKR_IDS=$(docker ps -q --filter "label=com.docker.swarm.service.name=$DKRENV_SVC")
+  DKR_IDS=($(docker ps -q --filter "label=com.docker.swarm.service.name=$DKRENV_SVC"))
   docker exec -it $DKR_IDS bash
 }
 function cmd_logs {
@@ -77,6 +77,8 @@ if [[ -n "$npm_package_dkrenv_img" ]] ; then export DKRENV_IMG=$npm_package_dkre
 if [[ -n "$npm_package_dkrenv_dockerfile" ]] ; then export DKRENV_DKRFILE=$npm_package_dkrenv_dockerfile ; fi
 if [[ -z "$DKRENV_SVC" || -z "$DKRENV_IMG" ]] ; then exec npm -s run :dkrenv -- $1; fi
 if [[ -z "$DKRENV_DKRFILE" ]] ; then export DKRENV_DKRFILE=./Dockerfile ; fi
+
+trap "exit 1;" SIGINT
 
 case "$1" in
   start) cmd_start ;;

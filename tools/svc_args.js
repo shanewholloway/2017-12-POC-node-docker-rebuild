@@ -1,6 +1,7 @@
 const {dkrenv} = require('../package.json')
 const devenv_remap = { secrets: 'secret', networks: 'network', ports: 'publish' }
 
+module.exports = exports = svc_args
 function svc_args(service, join_str='\n') {
   const svc_args = [].concat(service._args_ || [])
   for ( let [arg,lst] of Object.entries(service) ) {
@@ -12,7 +13,9 @@ function svc_args(service, join_str='\n') {
     if ('string' === typeof lst)
       lst = lst.split(/\w\+/)
     else if (!Array.isArray(lst))
-      lst = [lst]
+      lst = 'object' === typeof lst
+        ? Object.entries(lst).map(kv=>kv.join('=')) // "env" mapping
+        : [lst]
 
     for (const v of lst)
       if (false === v) continue
@@ -27,4 +30,5 @@ function svc_args(service, join_str='\n') {
     : svc_args
 }
 
-process.stdout.write(svc_args(dkrenv.service || {}))
+if (require.main === module)
+  process.stdout.write(`${svc_args(dkrenv.service || {})}\n`)
