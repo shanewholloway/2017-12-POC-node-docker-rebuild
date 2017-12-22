@@ -10,8 +10,7 @@ function cmd_update {
   docker service update --detach=false --image $DKRENV_IMG:latest $DKRENV_SVC
 }
 function cmd_start {
-  SVC_IDS=$(docker service ls -q --filter "name=$DKRENV_SVC")
-  if [[ -z "$SVC_IDS" ]] ; then
+  if ! is_running ; then
     cmd_create ;
   else
     cmd_update ;
@@ -19,6 +18,12 @@ function cmd_start {
 }
 function cmd_stop {
   docker service rm $DKRENV_SVC 2&> /dev/null
+}
+function is_running {
+  if [ -z ${SVC_IDS+x} ] ; then
+    SVC_IDS=($(docker service ls -q --filter "name=$DKRENV_SVC"))
+  fi
+  return $(( 0 == ${#SVC_IDS[@]} ))
 }
 
 
@@ -32,30 +37,44 @@ function cmd_logs {
 
 
 
-function cmd_build {
+function build_app {
   cd ./approot
   npm install
   npm run build
   cd ../
-  docker build -f $DKRENV_DKRFILE -t $DKRENV_IMG:latest .
+}
+
+function dkr_build {
+  ##if [[ -z ${BRIDGE_IP+x} ]] ; then
+    ## NPMRC=$(cat ~/.npmrc)
+    ## e.g. `docker build --build-arg NPMRC="$NPMRC" ...
+    ## BRIDGE_IP=$(docker network inspect 'bridge' --format '{{range .IPAM.Config}}{{.Gateway}}{{end}}')
+    ## e.g. `docker build --add-host sr-npm-registry:$BRIDGE_IP` ...
+  ##fi
+  docker build $*
+}
+
+function cmd_build {
+  build_app
+  dkr_build -f $DKRENV_DKRFILE -t $DKRENV_IMG:latest .
   docker push $DKRENV_IMG:latest
 }
 
 function cmd_build_devel {
   # Use the primary Dockerfile build target to create $DKRENV_IMG:build
-  docker build --target build -f $DKRENV_DKRFILE -t $DKRENV_IMG:build .
+  dkr_build --target build -f $DKRENV_DKRFILE -t $DKRENV_IMG:build .
 
   # Add any localized devel overrides to the build image, creating $DKRENV_IMG:devel
-  docker build -f ./Dockerfile.devel --build-arg DKRENV_IMG=$DKRENV_IMG -t $DKRENV_IMG:devel .
+  dkr_build -f ./Dockerfile.devel --build-arg DKRENV_IMG=$DKRENV_IMG -t $DKRENV_IMG:devel .
 }
 
 function cmd_watch {
-  cmd_start
+  if is_running ; then cmd_create ; fi
 
   cmd_build_devel
 
   # Watch for dist changes; upon change run the live entrypoint of this script
-  nodemon --signal SIGTERM --no-stdin --delay 1 \
+  npx nodemon --signal SIGTERM --no-stdin --delay 1 \
     -w ./approot/dist \
     -w ./approot/deps/*/dist \
     --exec "bash $0 live"
@@ -63,7 +82,7 @@ function cmd_watch {
 
 function cmd_live {
   # Apply changes atop the $DKRENV_IMG:devel to create the new $DKRENV_IMG:live
-  docker build -f ./Dockerfile.live --build-arg DKRENV_IMG=$DKRENV_IMG -t $DKRENV_IMG:live .
+  dkr_build -f ./Dockerfile.live --build-arg DKRENV_IMG=$DKRENV_IMG -t $DKRENV_IMG:live .
 
   # Update the service to use $DKRENV_IMG:live
   docker push $DKRENV_IMG:live
