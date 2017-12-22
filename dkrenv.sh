@@ -43,6 +43,11 @@ function build_app {
   npm run build
   cd ../
 }
+function clean_app {
+  cd ./approot
+  npm -s run clean
+  cd ../
+}
 
 function dkr_build {
   ##if [[ -z ${BRIDGE_IP+x} ]] ; then
@@ -56,20 +61,23 @@ function dkr_build {
 
 function cmd_build {
   build_app
+
+  # Use the primary Dockerfile build target to create $DKRENV_IMG:build
+  dkr_build --target build -f $DKRENV_DKRFILE -t $DKRENV_IMG:build .
+
+  # Use the primary Dockerfile build target to create $DKRENV_IMG:latest
   dkr_build -f $DKRENV_DKRFILE -t $DKRENV_IMG:latest .
+
   docker push $DKRENV_IMG:latest
 }
 
 function cmd_build_devel {
-  # Use the primary Dockerfile build target to create $DKRENV_IMG:build
-  dkr_build --target build -f $DKRENV_DKRFILE -t $DKRENV_IMG:build .
-
   # Add any localized devel overrides to the build image, creating $DKRENV_IMG:devel
   dkr_build -f ./Dockerfile.devel --build-arg DKRENV_IMG=$DKRENV_IMG -t $DKRENV_IMG:devel .
 }
 
 function cmd_watch {
-  if is_running ; then cmd_create ; fi
+  if ! is_running ; then cmd_create ; fi
 
   cmd_build_devel
 
@@ -89,6 +97,26 @@ function cmd_live {
   docker service update --image $DKRENV_IMG:live --detach=false $DKRENV_SVC
 }
 
+function cmd_ls {
+  docker image ls $DKRENV_IMG
+}
+function cmd_clean {
+  echo
+  if is_running ; then echo "Refusing to clean while running; Run stop first" ; exit 1 ; fi
+
+  clean_app
+
+  IMGS=($(docker image ls --format '{{.Repository}}:{{.Tag}}' $DKRENV_IMG))
+  if [[ 0 < ${#IMGS[@]} ]] ; then
+    echo "Cleaning ${#IMGS[@]} images of '$DKRENV_IMG'"
+    docker image ls $DKRENV_IMG
+    echo
+    docker image rm ${IMGS[@]}
+  else
+    echo "Zero images of '$DKRENV_IMG' to clean (${#IMGS[@]})"
+  fi
+  echo
+}
 
 
 if [[ -n "$npm_package_dkrenv_svc" ]] ; then export DKRENV_SVC=$npm_package_dkrenv_svc ; fi
@@ -112,6 +140,9 @@ case "$1" in
   devel) cmd_build_devel ;;
   watch) cmd_watch ;;
   live) cmd_live ;;
+
+  ls) cmd_ls ;;
+  clean) cmd_clean ;;
 
   *)
     echo $"Usage: $0 {start|stop|update|build|watch|logs|exec}"

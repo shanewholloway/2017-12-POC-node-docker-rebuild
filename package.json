@@ -21,6 +21,7 @@
     "exec": "bash ./dkrenv.sh exec",
     "build": "bash ./dkrenv.sh build",
     "watch": "bash ./dkrenv.sh watch",
+    "clean": "bash ./dkrenv.sh clean",
     "dkr-registry-init": "docker service create --name POC_local_swarm_registry --publish 5003:5000 --detach=false registry:latest || true",
     "dkr-registry-rm": "docker service rm POC_local_swarm_registry || true",
     "env": "env"
