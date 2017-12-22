@@ -60,15 +60,24 @@ function dkr_build {
 }
 
 function cmd_build {
-  build_app
+  if [[ -n ${CI_SERVER+x} ]] ; then
+    # On GitLab-like build server; skip DKRENV tooling
+    echo "In CI/CD Build Environment"
 
-  # Use the primary Dockerfile build target to create $DKRENV_IMG:build
-  dkr_build --target build -f $DKRENV_DKRFILE -t $DKRENV_IMG:build .
+    # Use the primary Dockerfile build target to create $DKRENV_IMG:latest
+    dkr_build -f $DKRENV_DKRFILE -t $DKRENV_IMG:latest .
 
-  # Use the primary Dockerfile build target to create $DKRENV_IMG:latest
-  dkr_build -f $DKRENV_DKRFILE -t $DKRENV_IMG:latest .
+  else
+    echo "In Local Development Environment"
 
-  docker push $DKRENV_IMG:latest
+    # Use the primary Dockerfile build target to create $DKRENV_IMG:build
+    dkr_build --target build -f $DKRENV_DKRFILE -t $DKRENV_IMG:build .
+
+    # Use the primary Dockerfile build target to create $DKRENV_IMG:latest
+    dkr_build -f $DKRENV_DKRFILE -t $DKRENV_IMG:latest .
+
+    docker push $DKRENV_IMG:latest
+  fi
 }
 
 function cmd_build_devel {
@@ -80,6 +89,8 @@ function cmd_watch {
   if ! is_running ; then cmd_create ; fi
 
   cmd_build_devel
+
+  build_app
 
   # Watch for dist changes; upon change run the live entrypoint of this script
   npx nodemon --signal SIGTERM --no-stdin --delay 1 \
@@ -106,7 +117,7 @@ function cmd_clean {
 
   clean_app
 
-  IMGS=($(docker image ls --format '{{.Repository}}:{{.Tag}}' $DKRENV_IMG))
+  IMGS=($( docker image ls --format '{{ if ne .Tag "\u003cnone\u003e" }} {{.Repository}}:{{.Tag}} {{else}} {{.ID}} {{end}}' $DKRENV_IMG ))
   if [[ 0 < ${#IMGS[@]} ]] ; then
     echo "Cleaning ${#IMGS[@]} images of '$DKRENV_IMG'"
     docker image ls $DKRENV_IMG

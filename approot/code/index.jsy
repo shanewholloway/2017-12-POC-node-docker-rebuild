@@ -1,5 +1,5 @@
 const os = require('os')
-const V = 'Version 2342'
+const V = 'Version 2446'
 console.log @
   `${V}\n    `
   os.platform()
@@ -22,7 +22,7 @@ if 0 ::
 
 setInterval @
   () => :: console.log @ `DYN ${V}`, new Date()
-  2000
+  5000
 
 process.on @ 'SIGTERM', () => ::
   console.log @ `GOT SIGTERM ${V}`

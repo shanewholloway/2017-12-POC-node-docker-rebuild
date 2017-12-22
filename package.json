@@ -5,7 +5,9 @@
     "img": "127.0.0.1:5003/poc/test-live",
     "service": {
       "replicas": 4,
-      "update-parallelism": 2
+      "update-parallelism": 2,
+      "update-monitor": "1ms",
+      "stop-grace-period": "200ms"
     }
   },
   "dkrenv:alpine": {
